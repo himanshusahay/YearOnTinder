@@ -5,7 +5,7 @@
     <title>Year On Tinder</title>
     <meta name="viewport" content="initial-scale=1">
     <link href="https://fonts.googleapis.com/css?family=Lato:400,700,900" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="./css/styles.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.16.1/axios.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.8.0/d3.min.js"></script>
@@ -13,6 +13,44 @@
   </head>
   <body>
     <div id="app"></div>
-    <script src="./index.js"></script>
+
+    <script>
+      $(document).ready(function() {
+        $.ajaxSetup({ cache: true });
+        $.getScript('//connect.facebook.net/en_US/sdk.js', function(){
+          FB.init({
+            appId: '1903671989912912',
+            version: 'v2.7' // or v2.1, v2.2, v2.3, ...
+          });     
+          $('#loginbutton,#feedbutton').removeAttr('disabled');
+          FB.getLoginStatus(updateStatusCallback);
+
+          function updateStatusCallback () {
+            console.log("Hello world");
+          }
+        });
+      });
+
+      function myFacebookLogin() {
+        FB.login(function(response) {
+            if (response.authResponse) {
+             console.log('Welcome!  Fetching your information.... ');
+             FB.api('/me', function(response) {
+               console.log(response);
+               console.log('Good to see you, ' + response.name + '.');
+               var tinderUrl = "https://www.facebook.com/v2.6/dialog/oauth?redirect_uri=fb464891386855067%3A%2F%2Fauthorize%2F&display=touch&state=%7B%22challenge%22%3A%22IUUkEUqIGud332lfu%252BMJhxL4Wlc%253D%22%2C%220_auth_logger_id%22%3A%2230F06532-A1B9-4B10-BB28-B29956C71AB1%22%2C%22com.facebook.sdk_client_state%22%3Atrue%2C%223_method%22%3A%22sfvc_auth%22%7D&scope=user_birthday%2Cuser_photos%2Cuser_education_history%2Cemail%2Cuser_relationship_details%2Cuser_friends%2Cuser_work_history%2Cuser_likes&response_type=token%2Csigned_request&default_audience=friends&return_scopes=true&auth_type=rerequest&client_id=464891386855067&ret=login&sdk=ios&logger_id=30F06532-A1B9-4B10-BB28-B29956C71AB1&ext=1470840777&hash=AeZqkIcf-NEW6vBd";
+
+               // window.location.href = tinderUrl;
+             });
+            } else {
+             console.log('User cancelled login or did not fully authorize.');
+            }
+        });
+      }
+    </script>
+
+    <button onclick="myFacebookLogin()">Login with Facebook</button>
+
+    <script src="./js/index.js"></script>
   </body>
 </html>
