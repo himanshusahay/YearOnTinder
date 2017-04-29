@@ -4,7 +4,7 @@ axios.get('/data.json')
     // Self object
     var self = response.data.self;
 
-    // Messages
+    // Messages, people
     var messages = {},
       people = {};
     response.data.updates.matches.forEach(function (match) {
@@ -38,8 +38,7 @@ axios.get('/data.json')
 
       return {
         date: dateElement,
-        count: messageData.length,
-        messages: messageData
+        count: messageData.length
       };
     });
     var heatmap = calendarHeatmap()
@@ -57,6 +56,7 @@ axios.get('/data.json')
         
         var selector = 'matches';
         $("#" + selector).remove();
+        $("#message-container").remove();
         if (messageData !== undefined) {
           console.log('data', messageData);
           
@@ -84,20 +84,39 @@ axios.get('/data.json')
                 var photo = photos[0];
                 var markup = "<img class='match-photo' id='" + userId + "' src='" + photo.url + "'>"
                 $("#" + selector).append(markup);
+                $("#" + userId).click(function () {
+                  showMessages(userId, user);
+                });
               }
             }
           });
+
+          function showMessages (userId, user) {
+            var selector = 'message-container';
+            $("#" + selector).remove();
+            $("#calendar").append("<div id='" + selector + "'></div>");
+
+            $("#" + selector).append("<div id='name-container'></div>");
+            $("#name-container").append("<div class='namebio-container'><div class='name'>" + user.name + "</div><div class='bio'>" + user.bio + "</div></div>");
+            $("#name-container").append("<img class='photo' src='" + user.photos[0].url + "'>");
+
+            var messages  = messageData.filter(function (message) {
+              return message.to === userId || message.from === userId;
+            });
+
+            messages.forEach(function (message) {
+              var prettyDate = moment(message.sent_date).fromNow();
+              var messageClass = message.from === self._id ? "message me" : "message";
+              var markup = "<div class='" + messageClass + "'><span>" + prettyDate + "</span><span>" + message.message + "</span></div>";
+              $("#" + selector).append(markup);
+            });
+          }
         }
       });
+
     heatmap();
+    d3.select("body")
+      .append('svg')
+      .attr('width', 400)
+      .style('fill', "#000");
   });
-
-
-
-
-
-
-
-
-
-
