@@ -17,7 +17,7 @@ axios.get('/data.json')
       if (matchMessages !== undefined) {
         matchMessages.forEach(function (message) {
           var messageDate = moment(message.sent_date).format('ddd MMM DD YYYY');
-          messageDate += " 00:00:00 GMT-0400 (EDT)" // To make date compatible with building calendar below
+          messageDate += " 00:00:00 GMT-0400 (Eastern Daylight Time)" // To make date compatible with building calendar below
           if (messageDate in messages) {
             messages[messageDate].push(message);
           } else {
@@ -53,7 +53,6 @@ axios.get('/data.json')
       .colorRange(['#FFF5F4', '#F72A70'])
       .onClick(function (data) {
         var messageData = messages[data.date];
-        
         var selector = 'matches';
         $("#" + selector).remove();
         $("#message-container").remove();
@@ -115,8 +114,5 @@ axios.get('/data.json')
       });
 
     heatmap();
-    d3.select("body")
-      .append('svg')
-      .attr('width', 400)
-      .style('fill', "#000");
+  
   });
