@@ -89,6 +89,7 @@ axios.get('/data.json')
               }
             }
           });
+          $("#" + userIds[0]).trigger("click");
 
           function showMessages (userId, user) {
             var selector = 'message-container';
@@ -114,5 +115,5 @@ axios.get('/data.json')
       });
 
     heatmap();
-  
+
   });
