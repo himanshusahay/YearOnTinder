@@ -1,5 +1,5 @@
 body {
-	font-family: 'Lato', 'sans-serif';
+	font-family: Lato, sans-serif;
 	font-size: 17px;
 }
 
@@ -7,13 +7,26 @@ body {
 	text-align: center;
 }
 
-// Calendar Styles
+/*Calendar Styles*/
+#calendar {
+  width: 972px;
+  margin: auto;
+}
+#matches {
+  padding:  0 36px;
+}
+.match-photo {
+  width: 50px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
 text.month-name,
 text.calendar-heatmap-legend-text,
 text.day-initial {
-  font-size: 10px;
+  font-size: 14px;
   fill: inherit;
-  font-family: Helvetica, arial, 'Open Sans', sans-serif;
+  font-family: Lato, sans-serif;
 }
 rect.day-cell:hover {
   stroke: #555555;
@@ -30,7 +43,7 @@ rect.day-cell:hover {
   text-align: center;
 }
 .day-cell-tooltip > span {
-  font-family: Helvetica, arial, 'Open Sans', sans-serif
+  font-family: Lato, sans-serif
 }
 .calendar-heatmap {
   box-sizing: initial;

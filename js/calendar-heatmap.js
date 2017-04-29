@@ -1,13 +1,13 @@
 
 function calendarHeatmap() {
   // defaults
-  var width = 750;
-  var height = 110;
+  var width = 900;
+  var height = 150;
   var legendWidth = 150;
   var selector = 'body';
-  var SQUARE_LENGTH = 11;
+  var SQUARE_LENGTH = 15;
   var SQUARE_PADDING = 2;
-  var MONTH_LABEL_PADDING = 6;
+  var MONTH_LABEL_PADDING = 10;
   var now = moment().endOf('day').toDate();
   var yearAgo = moment().startOf('day').subtract(1, 'year').toDate();
   var startDate = null;
@@ -16,7 +16,7 @@ function calendarHeatmap() {
   var colorRange = ['#D8E6E7', '#218380'];
   var tooltipEnabled = true;
   var tooltipUnit = 'contribution';
-  var legendEnabled = true;
+  var legendEnabled = false;
   var onClick = null;
   var weekStart = 0; //0 for Sunday, 1 for Monday
   var locale = {
@@ -116,7 +116,8 @@ function calendarHeatmap() {
         .attr('width', width)
         .attr('class', 'calendar-heatmap')
         .attr('height', height)
-        .style('padding', '36px');
+        .style('padding', '36px')
+        .style('padding-bottom', '10px');
 
       dayRects = svg.selectAll('.day-cell')
         .data(dateRange);  //  array of days for the last yr
