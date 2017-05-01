@@ -17,7 +17,7 @@ axios.get('/data.json')
       if (matchMessages !== undefined) {
         matchMessages.forEach(function (message) {
           var messageDate = moment(message.sent_date).format('ddd MMM DD YYYY');
-          messageDate += " 00:00:00 GMT-0400 (Eastern Daylight Time)" // To make date compatible with building calendar below
+          messageDate += " 00:00:00 GMT-0400 (Eastern Daylight Time)"; // To make date compatible with building calendar below
           if (messageDate in messages) {
             messages[messageDate].push(message);
           } else {
