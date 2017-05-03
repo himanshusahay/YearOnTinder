@@ -27,22 +27,19 @@ d3.json("data.json", function(data) {
 	  	if (d.messages !== undefined){
 		  	if (d.messages.length > 0) {
 			  	
-			  	console.log(d.messages.length);
+			  	// console.log(d.messages.length);
 			  	d.messages.forEach(function(message){
 		          	var messageDate = moment(message.sent_date).format('ddd MMM DD YYYY');
 		          	messageDate += " 00:00:00 GMT-0400 (EDT)"; // To make date compatible with building calendar below
-
-
-					// var unformattedMessageDate = moment(message.sent_date).format('l'); // 23/1/2017
-					// var	parseDate = d3.time.format("%d/%m/%Y").parse;
-					// var messageDate = parseDate(unformattedMessageDate);
-					// console.log(messageDate);
-					var timeParse = d3.time.format("%H:%M:%SZ").parse;
-					// console.log(moment(message.timestamp).format('LTS'));
-					var timeOfDay = moment(message.timestamp).format('LTS');
-					// var timeOfDay = timeParse(unformattedTimeOfDay);
-					// console.log(timeOfDay);
-				  	// Save this match's ID and the time and date of the interaction
+					var unformattedTimeOfDay = moment(message.timestamp).format('HHmm');
+					// Change time to something between 0 and 24. 1:30 pm -> 13.5
+					// Ignore seconds
+					var hour = unformattedTimeOfDay.substring(0, 2);
+					var minute = unformattedTimeOfDay.substring(2, 4);		
+					var timeNumString = hour + '.' + minute;
+					var timeOfDay = parseFloat(timeNumString);
+					// console.log(hour, minute, timeNum);
+					// Save this match's ID and the time and date of the interaction
 				  	// Hashed by date of interaction
 				  	if (!(messageDate in personByDate)){
 		  				personByDate[messageDate] = [];
@@ -70,11 +67,11 @@ d3.json("data.json", function(data) {
 		}
 	});
 
-	console.log(dateMap);
+	// console.log(dateMap);
 	// Get category of interaction success
 	Object.keys(dateMap).forEach(function (key){
 		match = dateMap[key];
-		console.log(data.updates.messages);
+		// console.log(data.updates.messages);
 		if (match.message_count > 1){
 			result = true;
 
@@ -83,7 +80,7 @@ d3.json("data.json", function(data) {
 			})[0].messages;
 
 			for (let message of messages) {
-				console.log(message);
+				// console.log(message);
 				// result = libphonenumber.isPossibleNumber(libphonenumber.findNumbers(message.message));
 				result = false;
 				if (result){
@@ -110,11 +107,11 @@ d3.json("data.json", function(data) {
 	var y = d3.time.scale()
     .range([height, 0]).nice();
 
-	y.domain(Object.keys(personByDate).map(function(d){ return d[1] }));
+	y.domain(Object.keys(personByDate).map(function(d){ return d.time }));
 
 	var xScale = d3.time.scale()
 		.range([0, width]).nice()
-		.domain(Object.keys(personByDate).map(function(d){ return d[0] }));
+		.domain(Object.keys(personByDate).map(function(d){ return d.id }));
 
 	var xAxis = d3.svg.axis()
 		.scale(xScale)
@@ -135,20 +132,19 @@ d3.json("data.json", function(data) {
         return d.name + ",<br>";
       });
 
-
-    var zoomBeh = d3.behavior.zoom()
-      .x(xScale)
-      .y(y)
-      .scaleExtent([0, 500])
-      .on("zoom", zoom);
+    // var zoomBeh = d3.behavior.zoom()
+    //   .x(xScale)
+    //   .y(y)
+    //   .scaleExtent([0, 500])
+    //   .on("zoom", zoom);
 
 	var svg = d3.select("#scatter")
     .append("svg")
       .attr("width", outerWidth)
       .attr("height", outerHeight)
     .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-      .call(zoomBeh);
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      // .call(zoomBeh);
 
 	svg.call(tip);
 
@@ -202,11 +198,13 @@ d3.json("data.json", function(data) {
 	  .data(personByDate)
 	  .enter().append("circle")
 	  .classed("dot", true)
-	  .attr("r", function (d) { return 6 * Math.sqrt(dateMap[d[0]].message_count / Math.PI); })
+	  .attr("r", function (d) { return 6 * Math.sqrt(dateMap[d.id].message_count / Math.PI); })
 	  .attr("transform", transform)
-	  .style("fill", function(d) { return color(dateMap[d[0]].success_category); })
+	  .style("fill", function(d) { return color(dateMap[d.id].success_category); })
 	  .on("mouseover", tip.show)
 	  .on("mouseout", tip.hide);
+
+
 
 	var legend = svg.selectAll(".legend")
 	  .data(color.domain())
@@ -240,13 +238,13 @@ d3.json("data.json", function(data) {
 	// 	objects.selectAll(".dot").transition().duration(1000).attr("transform", transform);
 	// }
 
-	function zoom() {
-		svg.select(".x.axis").call(xAxis);
-		svg.select(".y.axis").call(yAxis);
+	// function zoom() {
+	// 	svg.select(".x.axis").call(xAxis);
+	// 	svg.select(".y.axis").call(yAxis);
 
-		svg.selectAll(".dot")
-		    .attr("transform", transform);
-	}
+	// 	svg.selectAll(".dot")
+	// 	    .attr("transform", transform);
+	// }
 
 	function transform(d) {
 		return "translate(" + x(d[xCat]) + "," + y(d[yCat]) + ")";
