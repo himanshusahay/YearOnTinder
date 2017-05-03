@@ -1,6 +1,6 @@
 axios.get('/data.json')
   .then(function (response) {
-    console.log(response.data);
+    // console.log(response.data);
     // Self object
     var self = response.data.self;
 
@@ -57,7 +57,7 @@ axios.get('/data.json')
         $("#" + selector).remove();
         $("#message-container").remove();
         if (messageData !== undefined) {
-          console.log('data', messageData);
+          // console.log('data', messageData);
           
           var userIds = {};
           messageData.forEach(function (message) {
@@ -107,7 +107,17 @@ axios.get('/data.json')
             messages.forEach(function (message) {
               var prettyDate = moment(message.sent_date).fromNow();
               var messageClass = message.from === self._id ? "message me" : "message";
-              var markup = "<div class='" + messageClass + "'><span>" + prettyDate + "</span><span>" + message.message + "</span></div>";
+              var markup = "";
+              console.log(String(message.message).search(".giphy.com"));
+              if (message.message.search(".giphy.com") != -1){
+                markup = "<div class='" + messageClass + "'><span>" + prettyDate + "</span><span>";
+                markup += "<img src='" + message.message +"' alt='" + "GIF" + "' style='" + "width:150px;height:150px;'>"
+                markup += "</span></div>";  
+              }
+              else{
+                markup = "<div class='" + messageClass + "'><span>" + prettyDate + "</span><span>" + message.message + "</span></div>";
+              }
+              
               $("#" + selector).append(markup);
             });
           }
