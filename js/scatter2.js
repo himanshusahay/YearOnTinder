@@ -132,7 +132,10 @@ d3.json("data.json", function(data) {
 	    .attr("class", "tooltip")
 	    .style("opacity", 0);
 
-	var xScale = d3.scaleTime()       
+	var xExtent = d3.extent(personByDateArray, function (d) { return d.date; });
+	var yExtent = d3.extent(personByDateArray, function (d) { return d.time; });
+
+	var xScale = d3.scaleTime()
 	      .range([0, width])
 	      .nice();
 
@@ -148,9 +151,15 @@ d3.json("data.json", function(data) {
 	var yAxis = d3.axisLeft(yScale)
 		.ticks(12 * height / width);
 
-	var brush = d3.brush().extent([[0, 0], [width, height]]).on("end", brushended),
-	    idleTimeout,
-	    idleDelay = 350;
+	// var rExtent = d3.extent(dateMap, function (d) { return d.message_count; });
+	// var rScale = d3.scaleLinear()       
+	// 	.domain(rExtent)     
+	//     .range([MIN_RADIUS_SIZE, MAX_RADIUS_SIZE])
+	//     .nice();
+
+	// var brush = d3.brush().extent([[0, 0], [width, height]]).on("end", brushended),
+	//     idleTimeout,
+	//     idleDelay = 350;
 
 	var svg = d3.select("body").append("svg")
 	            .attr("width", width + margin.left + margin.right)
@@ -166,8 +175,6 @@ d3.json("data.json", function(data) {
 	    .attr("x", 0) 
 	    .attr("y", 0); 
 
-	var xExtent = d3.extent(personByDateArray, function (d) { return d.date; });
-	var yExtent = d3.extent(personByDateArray, function (d) { return d.time; });
 	xScale.domain(xExtent).nice();
 	yScale.domain(yExtent).nice();
 
@@ -211,38 +218,38 @@ d3.json("data.json", function(data) {
 	    .style("text-anchor", "end")
 	    .text("Time of Day");
 
-	scatter.append("g")
-	    .attr("class", "brush")
-	    .call(brush);
+	// scatter.append("g")
+	//     .attr("class", "brush")
+	//     .call(brush);
 
-	function brushended() {
+	// function brushended() {
 
-	    var s = d3.event.selection;
-	    if (!s) {
-	        if (!idleTimeout) return idleTimeout = setTimeout(idled, idleDelay);
-	        x.domain(d3.extent(data, function (d) { return d.time; })).nice();
-	        y.domain(d3.extent(data, function (d) { return d.date; })).nice();
-	    } else {
+	//     var s = d3.event.selection;
+	//     if (!s) {
+	//         if (!idleTimeout) return idleTimeout = setTimeout(idled, idleDelay);
+	//         xScale.domain(d3.extent(data, function (d) { return xScale(d.date); })).nice();
+	//         yScale.domain(d3.extent(data, function (d) { return xScale(d.time); })).nice();
+	//     } else {
 	        
-	        x.domain([s[0][0], s[1][0]].map(x.invert, x));
-	        y.domain([s[1][1], s[0][1]].map(y.invert, y));
-	        scatter.select(".brush").call(brush.move, null);
-	    }
-	    zoom();
-	}
+	//         xScale.domain([s[0][0], s[1][0]].map(xScale.invert, xScale));
+	//         yScale.domain([s[1][1], s[0][1]].map(yScale.invert, yScale));
+	//         scatter.select(".brush").call(brush.move, null);
+	//     }
+	//     zoom();
+	// }
 
-	function idled() {
-	    idleTimeout = null;
-	}
+	// function idled() {
+	//     idleTimeout = null;
+	// }
 
-	function zoom() {
+	// function zoom() {
 
-	    var t = scatter.transition().duration(750);
-	    svg.select("#axis--x").transition(t).call(xAxis);
-	    svg.select("#axis--y").transition(t).call(yAxis);
-	    scatter.selectAll("circle").transition(t)
-	    // .attr("cx", function (d) { return x(d.time); })
-	    // .attr("cy", function (d) { return y(d.date); });
-	}
+	//     var t = scatter.transition().duration(750);
+	//     svg.select("#axis--x").transition(t).call(xAxis);
+	//     svg.select("#axis--y").transition(t).call(yAxis);
+	//     scatter.selectAll("circle").transition(t)
+	//     .attr("cx", function (d) { return xScale(d.date); })
+	//     .attr("cy", function (d) { return yScale(d.time); });
+	// }
 	
 });
