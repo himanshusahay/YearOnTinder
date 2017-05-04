@@ -29,7 +29,6 @@ d3.json("data.json", function(data) {
 						var month = date.substring(0,2);
 						var day = date.substring(3, 5);
 						var year = date.substring(6, 10);
-						// console.log(date, month, day, year)
 						var messageDate = new Date(parseInt(year), parseInt(month)-1, parseInt(day));
 						if (minDate === -1){
 							minDate = messageDate;
@@ -86,7 +85,6 @@ d3.json("data.json", function(data) {
 		personByDateArray.push({id: personByDate.id, time: personByDate.time, date: personByDate.messageDate});
 	});
 
-	// console.log(dateMap);
 	// Get category of interaction success
 	Object.keys(dateMap).forEach(function (key){
 		match = dateMap[key];
