@@ -246,8 +246,8 @@ d3.json("data.json", function(data) {
       .attr("r", 4) //function (d) { return 6 * Math.sqrt(dateMap[d.id].message_count / Math.PI); })
       // .attr("transform", transform)
       // .style("fill", function(d) { return color(dateMap[d.id].success_category); })
-      .attr("cx", function (d) { return d.time; })
-      .attr("cy", function (d) { return d.date; })
+      .attr("cx", function (d) { return d.date; })
+      .attr("cy", function (d) { return d.time; })
       .on("mouseover", tip.show)
       .on("mouseout", tip.hide);
 

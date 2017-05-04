@@ -82,7 +82,8 @@ d3.json("data.json", function(data) {
 	});
 
 	Object.keys(personByDate).forEach(function (key){
-		personByDateArray.push({id: personByDate.id, time: personByDate.time, date: personByDate.messageDate});
+		var people = personByDate[key];
+		personByDateArray = personByDateArray.concat(people);
 	});
 
 	// Get category of interaction success
@@ -129,20 +130,20 @@ d3.json("data.json", function(data) {
 	    .attr("class", "tooltip")
 	    .style("opacity", 0);
 
-	var x = d3.scaleTime()          
+	var xScale = d3.scaleTime()       
 	      .range([0, width])
 	      .nice();
 
-	var y = d3.scaleLinear()
+	var yScale = d3.scaleLinear()
 	    .range([height, 0]);
 
-	var xAxis = d3.axisBottom(x)
+	var xAxis = d3.axisBottom(xScale)
 		.tickSize(-height)
 		.tickFormat(d3.timeFormat("%b %d %Y"))
 		.ticks(12)
 		.tickPadding(2);
 
-	var yAxis = d3.axisLeft(y)
+	var yAxis = d3.axisLeft(yScale)
 		.ticks(12 * height / width);
 
 	var brush = d3.brush().extent([[0, 0], [width, height]]).on("end", brushended),
@@ -163,10 +164,10 @@ d3.json("data.json", function(data) {
 	    .attr("x", 0) 
 	    .attr("y", 0); 
 
-	var xExtent = d3.extent(personByDateArray, function (d) { return d.time; });
-	var yExtent = d3.extent(personByDateArray, function (d) { return d.date; });
-	x.domain(xExtent).nice();
-	y.domain(yExtent).nice();
+	var xExtent = d3.extent(personByDateArray, function (d) { return d.date; });
+	var yExtent = d3.extent(personByDateArray, function (d) { return d.time; });
+	xScale.domain(xExtent).nice();
+	yScale.domain(yExtent).nice();
 
 	var scatter = svg.append("g")
 	     .attr("id", "scatterplot")
@@ -177,8 +178,8 @@ d3.json("data.json", function(data) {
 	  .enter().append("circle")
 	    .attr("class", "dot")
 	    .attr("r", 4)
-	    // .attr("cx", function (d) { return d.time; })
-	    // .attr("cy", function (d) { return d.date; })
+	    .attr("cx", function (d) { return xScale(d.date); })
+	    .attr("cy", function (d) { return yScale(d.time); })
 	    .attr("opacity", 0.5)
 	    .style("fill", "#4292c6");
 
