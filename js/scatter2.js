@@ -199,9 +199,9 @@ d3.json("data.json", function(data) {
 	    	// https://bl.ocks.org/mbostock/3883245
 	    	// All the points belonging to the person your clicked on
 	    	var personDots = scatter.selectAll(".dot")
-	    		.filter(function (d2) { return d2.id === d.id; })
+	    		.filter(function (d2) { return d2.id === d.id; });
 	    	// All data for that specific person
-	    	var personData = personDots.data()
+	    	var personData = personDots.data();
 
 	    	// Build line generator function
 	    	var line = d3.line()
@@ -209,24 +209,10 @@ d3.json("data.json", function(data) {
 			    .y(function(d) { return yScale(d.time); });
 
 			// Plot line
-			  g.append("g")
-			      .attr("transform", "translate(0," + height + ")")
-			      .call(d3.axisBottom(x))
-			    .select(".domain")
-			      .remove();
-
-			  g.append("g")
-			      .call(d3.axisLeft(y))
-			    .append("text")
-			      .attr("fill", "#000")
-			      .attr("transform", "rotate(-90)")
-			      .attr("y", 6)
-			      .attr("dy", "0.71em")
-			      .attr("text-anchor", "end")
-			      .text("Price ($)");
-
-			  g.append("path")
-			      .datum(personData)
+				d3.select(".match-line").remove();
+			  svg.append("path")
+			  	.classed("match-line", true)
+			    .datum(personData)
 			      .attr("fill", "none")
 			      .attr("stroke", "steelblue")
 			      .attr("stroke-linejoin", "round")
