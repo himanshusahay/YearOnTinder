@@ -132,9 +132,9 @@ d3.json("data.json", function(data) {
 	    .attr("class", "tooltip")
 	    .style("opacity", 0);
 
-	var xScale = d3.scaleTime()       
-	      .range([0, width])
-	      .nice();
+	var xScale = d3.scaleTime()
+	    .range([0, width])
+	    .nice();
 
 	var yScale = d3.scaleLinear()
 	    .range([height, 0]);
@@ -179,11 +179,50 @@ d3.json("data.json", function(data) {
 	    .data(personByDateArray)
 	  .enter().append("circle")
 	    .attr("class", "dot")
-	    .attr("r", 4)
+	    .attr("r", FIX SIZE WITH SCALE)
 	    .attr("cx", function (d) { return xScale(d.date); })
 	    .attr("cy", function (d) { return yScale(d.time); })
 	    .attr("opacity", 0.5)
-	    .style("fill", "#4292c6");
+	    .style("fill", "#4292c6")
+	    .on('click', function (d) {
+	    	// https://bl.ocks.org/mbostock/3883245
+	    	// All the points belonging to the person your clicked on
+	    	var personDots = scatter.selectAll(".dot")
+	    		.filter(function (d2) { return d2.id === d.id; })
+	    	// All data for that specific person
+	    	var personData = personDots.data()
+
+	    	// Build line generator function
+	    	var line = d3.line()
+			    .x(function(d) { return xScale(d.date); })
+			    .y(function(d) { return yScale(d.time); });
+
+			// Plot line
+			  g.append("g")
+			      .attr("transform", "translate(0," + height + ")")
+			      .call(d3.axisBottom(x))
+			    .select(".domain")
+			      .remove();
+
+			  g.append("g")
+			      .call(d3.axisLeft(y))
+			    .append("text")
+			      .attr("fill", "#000")
+			      .attr("transform", "rotate(-90)")
+			      .attr("y", 6)
+			      .attr("dy", "0.71em")
+			      .attr("text-anchor", "end")
+			      .text("Price ($)");
+
+			  g.append("path")
+			      .datum(personData)
+			      .attr("fill", "none")
+			      .attr("stroke", "steelblue")
+			      .attr("stroke-linejoin", "round")
+			      .attr("stroke-linecap", "round")
+			      .attr("stroke-width", 1.5)
+			      .attr("d", line);
+	    });
 
 	// x axis
 	svg.append("g")
@@ -220,8 +259,8 @@ d3.json("data.json", function(data) {
 	    var s = d3.event.selection;
 	    if (!s) {
 	        if (!idleTimeout) return idleTimeout = setTimeout(idled, idleDelay);
-	        x.domain(d3.extent(data, function (d) { return d.time; })).nice();
-	        y.domain(d3.extent(data, function (d) { return d.date; })).nice();
+	        x.domain(d3.extent(data, function (d) { return d.date; })).nice();
+	        y.domain(d3.extent(data, function (d) { return d.time; })).nice();
 	    } else {
 	        
 	        x.domain([s[0][0], s[1][0]].map(x.invert, x));
