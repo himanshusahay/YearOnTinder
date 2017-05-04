@@ -97,7 +97,8 @@ d3.json("data.json", function(data) {
 	});
 
 	Object.keys(personByDate).forEach(function (key){
-		personByDateArray.push({id: personByDate.id, time: personByDate.time, date: personByDate.messageDate});
+		var people = personByDate[key];
+		personByDateArray = personByDateArray.concat(people);
 	});
 
 	// console.log(dateMap);
