@@ -306,32 +306,6 @@ d3.json("data.json", function(data) {
 	    .style("text-anchor", "end")
 	    .text("Time of Day");
 
-	function displayData(d, i) {
-
-	  d3.select(this)  
-	    .attr("r",10);
-
-	  d3.select('svg #blowup')
-	    .text(d.time + " " + dateMap[d.id].name)      
-	    .style("fill", function(d) {return color(dateMap[d.id].success_category); })  
-	    .transition()       
-	    .style('opacity', 1);
-
-	}
-
-	function removeDisplayedData(d, i) {
-
-	 d3.select(this)
-	    .transition()
-	    .duration(500)
-	    .attr("r",2.5);
-
-	  d3.select('svg #blowup')      
-	      .transition()
-	      .duration(1500)
-	      .style('opacity', 0);
-	}
-
 
 // function transform(d) {
 //   return "translate(" + x(d.xlog) +"," + y(d.ylog)+")";

@@ -1,1 +1,1 @@
-{"messaged_first": 15, "interactions": 5, "matches": 37, "interactions_gif": 2, "received_message_first": 1, "interactions_phone_number": 1, "messaged": 16}
+[{"stat": "num_matches", "value": 37}, {"stat": "num_messaged", "value": 16}, {"stat": "num_interactions", "value": 5}, {"stat": "num_interactions_GIF", "value": 2}, {"stat": "num_messaged_first", "value": 15}, {"stat": "num_received_message_from_first", "value": 1}, {"stat": "num_interactions_phone_number", "value": 1}]
