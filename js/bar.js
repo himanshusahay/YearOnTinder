@@ -1,3 +1,4 @@
+
 var margin = {top: 40, right: 20, bottom: 30, left: 40},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
@@ -17,7 +18,6 @@ var xAxis = d3.svg.axis()
 var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left")
-    .tickFormat(formatPercent);
 
 var tip = d3.tip()
   .attr('class', 'd3-tip')
@@ -35,7 +35,12 @@ var svg = d3.select("body").append("svg")
 svg.call(tip);
 
 d3.json("stats.json", function(error, data) {
-  
+
+    data.forEach(function(d) {
+        d.stat = d.stat;
+        d.value = +d.value;
+    });
+
   x.domain(data.map(function(d) { return d.stat; }));
   y.domain([0, d3.max(data, function(d) { return d.value; })]);
 
@@ -52,7 +57,7 @@ d3.json("stats.json", function(error, data) {
       .attr("y", 6)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text("value");
+      .text("Number of Matches");
 
   svg.selectAll(".bar")
       .data(data)

@@ -303,7 +303,7 @@ d3.json("data.json", function(data) {
 	svg.append("text")
 	 .style("text-anchor", "end")
 	    .attr("x", width)
-	    .attr("y", height - 8)
+	    .attr("y", height - 15)
 	 .text("Message Date");
 
 	// y axis
@@ -314,7 +314,7 @@ d3.json("data.json", function(data) {
 
 	svg.append("text")
 	    .attr("transform", "rotate(-90)")
-	    .attr("y", 6)
+	    .attr("y", 5)
 	    .attr("dy", "1em")
 	    .style("text-anchor", "end")
 	    .text("Time of Day");
