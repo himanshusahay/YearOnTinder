@@ -269,6 +269,17 @@ d3.json("data.json", function(data) {
 	    		markup = dateMap[d.id].name + "<br>" + moment(d.date).format("MMM Do YY") + "<br" + d.time;		
 	    	}
 
+	    	d3.select(this)
+	    		.attr("r", function (d) {
+		    	var radius = rScale(1);
+		    	if (d.id in dateMap) {
+		    		var date = dateMap[d.id];
+		    		radius = rScale(date.message_count);
+		    	}
+		    	radius += radius*.2;
+		    	return radius;
+		    });	
+
             div.transition()		
                 .duration(300)		
                 .style("opacity", .8);		
@@ -280,6 +291,16 @@ d3.json("data.json", function(data) {
             div.transition()		
                 .duration(500)		
                 .style("opacity", 0);	
+
+            d3.select(this)
+	    		.attr("r", function (d) {
+		    	var radius = rScale(1);
+		    	if (d.id in dateMap) {
+		    		var date = dateMap[d.id];
+		    		radius = rScale(date.message_count);
+		    	}
+		    	return radius;
+		    });
         });
 
 	// x axis
