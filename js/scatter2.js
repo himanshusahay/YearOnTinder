@@ -151,17 +151,17 @@ d3.json("data.json", function(data) {
 	      .nice();
 
 	var yScale = d3.scaleLinear()
-	    .range([height, 0]);
+	    .range([height, 0])
+	    .nice();
 
 	var xAxis = d3.axisBottom(xScale)
 		.tickSize(-height)
-		.tickFormat(d3.timeFormat("%b %d %Y"))
-		.ticks(12)
-		.tickPadding(2);
+		.tickFormat(d3.timeFormat("%b %d %y"))
+		.ticks(10)
+		.tickPadding(5);
 
 	var yAxis = d3.axisLeft(yScale)
-		.ticks(12 * height / width);
-
+		.ticks(24);
 
 	var rExtent = d3.extent(personByDateArray, function (d) {
 		return d.id in dateMap ? dateMap[d.id].message_count : 1;
