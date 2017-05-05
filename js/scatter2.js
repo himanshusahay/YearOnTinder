@@ -167,10 +167,6 @@ d3.json("data.json", function(data) {
 	      .range([0, width])
 	      .nice();
 
-	var xScale = d3.scaleTime()
-	    .range([0, width])
-	    .nice();
-
 	var yScale = d3.scaleLinear()
 	    .range([height, 0]);
 
@@ -184,10 +180,12 @@ d3.json("data.json", function(data) {
 		.ticks(12 * height / width);
 
 
-	var rExtent = d3.extent(personByDateArray, function (d) { return d.message_count; });
+	var rExtent = d3.extent(personByDateArray, function (d) {
+		return d.id in dateMap ? dateMap[d.id].message_count : 1;
+	});
 	var rScale = d3.scaleLinear()       
 		.domain(rExtent)     
-	    .range([minMessageCount + 4, maxMessageCount + 4])
+	    .range([4, 10])
 	    .nice();
 	// var brush = d3.brush().extent([[0, 0], [width, height]]).on("end", brushended),
 	//     idleTimeout,
@@ -232,11 +230,25 @@ d3.json("data.json", function(data) {
 	    .data(personByDateArray)
 	  	.enter().append("circle")
 	    .attr("class", "dot")
-	    .attr("r", d=>rScale(d.message_count))
+	    .attr("r", function (d) {
+	    	var radius = rScale(1);
+	    	if (d.id in dateMap) {
+	    		var date = dateMap[d.id];
+	    		radius = rScale(date.message_count);
+	    	}
+	    	return radius;
+	    })
 	    .attr("cx", function (d) { return xScale(d.date); })
 	    .attr("cy", function (d) { return yScale(d.time); })
 	    .attr("opacity", 0.5)
-	    .style("fill", d=>color(dateMap[d.id].success_category))
+	   	.style("fill", function (d) {
+	    	var fill = color(1);
+	    	if (d.id in dateMap) {
+	    		var date = dateMap[d.id];
+	    		fill = color(date.success_category);
+	    	}
+	    	return fill;
+	    })
 	    .on('click', function (d) {
 	    	// https://bl.ocks.org/mbostock/3883245
 	    	// All the points belonging to the person your clicked on
@@ -263,22 +275,23 @@ d3.json("data.json", function(data) {
 			      .attr("d", line);
 	    })
 	    .on("mouseover", function(d) {
+	    	var markup = "No name :(<br>" + moment(d.date).format("MMM Do YY") + "<br>" + d.time;
+	    	if (d.id in dateMap) {
+	    		markup = dateMap[d.id].name + "<br>" + moment(d.date).format("MMM Do YY") + "<br" + d.time;		
+	    	}
 
-			d3.select(this)  
-				.attr("r",6);		
             div.transition()		
                 .duration(300)		
                 .style("opacity", .8);		
             div.style("left", (d3.event.pageX) + "px")		
                 .style("top", (d3.event.pageY - 28) + "px")
-                .html(dateMap[d.id].name + "<br>" + moment(d.date).format("MMM Do YY") + "<br" + d.time);	
+                .html(markup);	
             })					
         .on("mouseout", function(d) {		
             div.transition()		
                 .duration(500)		
                 .style("opacity", 0);	
         });
-;
 
 	// x axis
 	svg.append("g")
