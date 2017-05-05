@@ -2,6 +2,28 @@ body {
   font: 10px Lato, sans-serif;
 }
 
+a {
+    font-family: Lato, sans-serif;
+    font-size: 15px;
+    text-decoration: none;
+    text-align: center;
+    vertical-align: middle;
+}
+
+a:link {
+  color: #555555;
+}
+
+a:visited {
+  color: #555555;
+}
+
+svg{
+    position:absolute;
+    top:20%;
+    left:20%;
+}
+
 h1 {
   font-family: Lato, sans-serif;
   font-size: 30px;

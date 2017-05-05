@@ -136,8 +136,10 @@ d3.json("data.json", function(data) {
 
 
 	var margin = { top: 20, right: 20, bottom: 30, left: 30 };
-	width = 900 - margin.left - margin.right,
-	height = 480 - margin.top - margin.bottom;
+	// width = 900 - margin.left - margin.right,
+	// height = 480 - margin.top - margin.bottom;
+	var width = $(window).width()*0.75;
+	var height = $(window).height()/2;
 
 	var tooltip = d3.select("body").append("div")
 	    .attr("class", "tooltip")
