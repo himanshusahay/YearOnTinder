@@ -76,11 +76,23 @@ d3.json("data.json", function(data) {
 			  			name: d.person.name,
 			  			image_url: image_url,
 			  			message_count: d.messages.length,
-			  			success_category: 1
+			  			success_category: 0
 			  		}
 			  	}
 			}
 		}
+	});
+
+	Object.keys(dateMap).forEach(function (key){
+		match = dateMap[key];
+	
+		Object.keys(personByDate).forEach(function (key2){
+			personForDate = personByDate[key2];
+
+			if (match.id === personForDate.id){
+				personForDate.message_count = parseInt(match.message_count);
+			}
+		});
 	});
 
 	Object.keys(personByDate).forEach(function (key){
@@ -88,41 +100,57 @@ d3.json("data.json", function(data) {
 		personByDateArray = personByDateArray.concat(people);
 	});
 
+	var maxMessageCount = 0,
+		minMessageCount = 0;
+
 	// Get category of interaction success
 	Object.keys(dateMap).forEach(function (key){
 		match = dateMap[key];
 		// console.log(data.updates.messages);
-		if (match.message_count > 1){
-			result = true;
+		// if (match.message_count > 1){
+		// 	result = true;
 
-			var messages = data.updates.matches.filter(function (m) {
-				return m.id === key;
-			})[0].messages;
+			// var messages = data.updates.matches.filter(function (m) {
+			// 	return m.id === key;
+			// })[0].messages;
 
-			for (let message of messages) {
-				// console.log(message);
-				// result = libphonenumber.isPossibleNumber(libphonenumber.findNumbers(message.message));
-				result = false;
-				if (result){
-					match.success_category = 5;
-					break;
-				}
-			}
+			// for (let message of messages) {
+			// 	// console.log(message);
+			// 	// result = libphonenumber.isPossibleNumber(libphonenumber.findNumbers(message.message));
+			// 	result = false;
+			// 	if (result){
+			// 		match.success_category = 5;
+			// 		break;
+			// 	}
+			// }
 
-			if (match.success_category != 5){
-				var message_count = match.message_count;
-				if (message_count >= 10){
-					match.success_category = 4;
-				}
-				else if (message_count > 3){
-					match.success_category = 3;
-				}
-				else if (message_count > 2){
-					match.success_category = 2;
-				}
+		var interaction = data.updates.matches.filter(function (m) {
+			return m.id === key;
+		}).interaction; 
+
+
+		var phone_number_success = data.updates.matches.filter(function (m) {
+			return m.id === key;
+		}).phone_number; 
+
+		if (phone_number_success === true){
+			match.success_category = 2;
+		}
+
+		if (match.success_category != 2){
+			if (interaction == true) {
+				match.success_category = 1;
 			}
 		}
+
+		if (match.message_count > maxMessageCount){
+			maxMessageCount = match.message_count;
+		}
+		if (match.message_count < minMessageCount){
+			minMessageCount = match.message_count;
+		}
 	});
+
 
 	var margin = { top: 20, right: 20, bottom: 30, left: 30 };
 	width = 900 - margin.left - margin.right,
@@ -155,15 +183,20 @@ d3.json("data.json", function(data) {
 	var yAxis = d3.axisLeft(yScale)
 		.ticks(12 * height / width);
 
-	// var rExtent = d3.extent(dateMap, function (d) { return d.message_count; });
-	// var rScale = d3.scaleLinear()       
-	// 	.domain(rExtent)     
-	//     .range([MIN_RADIUS_SIZE, MAX_RADIUS_SIZE])
-	//     .nice();
 
+	var rExtent = d3.extent(personByDateArray, function (d) { return d.message_count; });
+	var rScale = d3.scaleLinear()       
+		.domain(rExtent)     
+	    .range([minMessageCount + 4, maxMessageCount + 4])
+	    .nice();
 	// var brush = d3.brush().extent([[0, 0], [width, height]]).on("end", brushended),
 	//     idleTimeout,
 	//     idleDelay = 350;
+
+	// Define the div for the tooltip
+	var div = d3.select("body").append("div")	
+	    .attr("class", "tooltip")				
+	    .style("opacity", 0);
 
 	var svg = d3.select("body").append("svg")
 	            .attr("width", width + margin.left + margin.right)
@@ -182,19 +215,28 @@ d3.json("data.json", function(data) {
 	xScale.domain(xExtent).nice();
 	yScale.domain(yExtent).nice();
 
+	var color = d3.scaleOrdinal(d3.schemeCategory20b);
+
+	// var zoomBeh = d3.zoom()
+	// 	.xAxis(xScale)
+	//     .yAxis(yScale)    
+	//     .scaleExtent([0,24])
+	//     .on("zoom", zoomed);
+
 	var scatter = svg.append("g")
 	     .attr("id", "scatterplot")
 	     .attr("clip-path", "url(#clip)");
+	     // .call(zoomBeh);
 	    
 	scatter.selectAll(".dot")
 	    .data(personByDateArray)
 	  	.enter().append("circle")
 	    .attr("class", "dot")
-	    .attr("r", 4)
+	    .attr("r", d=>rScale(d.message_count))
 	    .attr("cx", function (d) { return xScale(d.date); })
 	    .attr("cy", function (d) { return yScale(d.time); })
 	    .attr("opacity", 0.5)
-	    .style("fill", "#4292c6")
+	    .style("fill", d=>color(dateMap[d.id].success_category))
 	    .on('click', function (d) {
 	    	// https://bl.ocks.org/mbostock/3883245
 	    	// All the points belonging to the person your clicked on
@@ -219,7 +261,24 @@ d3.json("data.json", function(data) {
 			      .attr("stroke-linecap", "round")
 			      .attr("stroke-width", 1.5)
 			      .attr("d", line);
-	    });
+	    })
+	    .on("mouseover", function(d) {
+
+			d3.select(this)  
+				.attr("r",6);		
+            div.transition()		
+                .duration(300)		
+                .style("opacity", .8);		
+            div.style("left", (d3.event.pageX) + "px")		
+                .style("top", (d3.event.pageY - 28) + "px")
+                .html(dateMap[d.id].name + "<br>" + moment(d.date).format("MMM Do YY") + "<br" + d.time);	
+            })					
+        .on("mouseout", function(d) {		
+            div.transition()		
+                .duration(500)		
+                .style("opacity", 0);	
+        });
+;
 
 	// x axis
 	svg.append("g")
@@ -246,6 +305,38 @@ d3.json("data.json", function(data) {
 	    .attr("dy", "1em")
 	    .style("text-anchor", "end")
 	    .text("Time of Day");
+
+	function displayData(d, i) {
+
+	  d3.select(this)  
+	    .attr("r",10);
+
+	  d3.select('svg #blowup')
+	    .text(d.time + " " + dateMap[d.id].name)      
+	    .style("fill", function(d) {return color(dateMap[d.id].success_category); })  
+	    .transition()       
+	    .style('opacity', 1);
+
+	}
+
+	function removeDisplayedData(d, i) {
+
+	 d3.select(this)
+	    .transition()
+	    .duration(500)
+	    .attr("r",2.5);
+
+	  d3.select('svg #blowup')      
+	      .transition()
+	      .duration(1500)
+	      .style('opacity', 0);
+	}
+
+
+// function transform(d) {
+//   return "translate(" + x(d.xlog) +"," + y(d.ylog)+")";
+// }
+
 
 	// scatter.append("g")
 	//     .attr("class", "brush")
