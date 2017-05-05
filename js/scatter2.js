@@ -106,23 +106,6 @@ d3.json("data.json", function(data) {
 	// Get category of interaction success
 	Object.keys(dateMap).forEach(function (key){
 		match = dateMap[key];
-		// console.log(data.updates.messages);
-		// if (match.message_count > 1){
-		// 	result = true;
-
-			// var messages = data.updates.matches.filter(function (m) {
-			// 	return m.id === key;
-			// })[0].messages;
-
-			// for (let message of messages) {
-			// 	// console.log(message);
-			// 	// result = libphonenumber.isPossibleNumber(libphonenumber.findNumbers(message.message));
-			// 	result = false;
-			// 	if (result){
-			// 		match.success_category = 5;
-			// 		break;
-			// 	}
-			// }
 
 		var interaction = data.updates.matches.filter(function (m) {
 			return m.id === key;
@@ -261,6 +244,12 @@ d3.json("data.json", function(data) {
 	    	var line = d3.line()
 			    .x(function(d) { return xScale(d.date); })
 			    .y(function(d) { return yScale(d.time); });
+
+			personData.sort(function(a,b){
+			  // Turn strings into dates, and then subtract them
+			  // to get a value that is either negative, positive, or zero.
+			  return new Date(b.date) - new Date(a.date);
+			});
 
 			// Plot line
 				d3.select(".match-line").remove();
